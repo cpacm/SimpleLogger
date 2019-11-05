@@ -43,7 +43,6 @@ class LogClassVisitor(api: Int, classWriter: ClassWriter, private val className:
             return super.visitMethod(access, name, desc, signature, exceptions)
 
         val isStatic = access and Opcodes.ACC_STATIC == Opcodes.ACC_STATIC
-        System.out.println("visitMethod:$name    $desc  $access  $isStatic")
         val mv = cv.visitMethod(access, name, desc, signature, exceptions)
         val logMethodVisitor = LogMethodVisitor(api, mv, access, name!!, desc, classLog, lifeLog,isStatic,className)
 

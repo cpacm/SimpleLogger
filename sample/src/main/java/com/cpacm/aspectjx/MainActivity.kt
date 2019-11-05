@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         test.doSomeThing("cpacm", false, 1, 66.0, 'k', 4F, 6L, Test(), 10000)
     }
 
-    @MLog(key = "activity")
+    @MLog(key = "test")
     override fun onResume() {
         super.onResume()
     }
