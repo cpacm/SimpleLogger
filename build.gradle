@@ -7,6 +7,7 @@ buildscript {
         google()
         jcenter()
         maven { url 'repository' }
+        //maven { url 'http://nexus.yipiaoyun.com/repository/android/' }
 
     }
     dependencies {
@@ -25,6 +26,7 @@ allprojects {
         google()
         jcenter()
         maven { url 'repository' }
+        //maven { url 'http://nexus.yipiaoyun.com/repository/android/' }
     }
 }
 

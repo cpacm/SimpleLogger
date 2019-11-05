@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'maven'
 android {
     compileSdkVersion 28
 
@@ -32,6 +33,20 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
     api project(':logger-annotations')
+    //implementation 'com.cpacm:logger-annotations:1.0.0'
     implementation files('libs/log4j-1.2.17.jar')
     implementation files('libs/android-logging-log4j-1.0.3.jar')
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "http://nexus.yipiaoyun.com/repository/android/") {
+                authentication(userName: "admin", password: "admin123")
+                pom.groupId = 'com.cpacm'
+                pom.artifactId = "logger"
+                pom.version = '1.0.0'
+            }
+        }
+    }
 }

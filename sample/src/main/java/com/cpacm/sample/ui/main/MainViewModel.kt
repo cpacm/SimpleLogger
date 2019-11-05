@@ -1,4 +1,4 @@
-package com.cpacm.aspectjx.ui.main
+package com.cpacm.sample.ui.main
 
 import androidx.lifecycle.ViewModel
 

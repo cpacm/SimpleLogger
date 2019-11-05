@@ -1,4 +1,4 @@
-package com.cpacm.aspectjx.ui.main
+package com.cpacm.sample.ui.main
 
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.cpacm.aspectjx.R
+import com.cpacm.sample.R
 
 class MainFragment : Fragment() {
 

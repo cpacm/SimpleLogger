@@ -11,10 +11,12 @@ dependencies {
 uploadArchives {
     repositories {
         mavenDeployer {
-            pom.groupId = 'com.cpacm'
-            pom.artifactId = 'logger-annotations'
-            pom.version = '1.0.0'
-            repository(url: uri("../repository"))
+            repository(url: "http://nexus.yipiaoyun.com/repository/android/") {
+                authentication(userName: "admin", password: "admin123")
+                pom.groupId = 'com.cpacm'
+                pom.artifactId = "logger-annotations"
+                pom.version = '1.0.0'
+            }
         }
     }
 }

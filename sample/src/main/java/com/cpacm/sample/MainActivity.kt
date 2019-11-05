@@ -1,15 +1,14 @@
-package com.cpacm.aspectjx
+package com.cpacm.sample
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.cpacm.annotations.CLog
-import com.cpacm.annotations.MLog
-import com.cpacm.aspectjx.ui.main.MainFragment
+import com.cpacm.annotations.*
+import com.cpacm.sample.ui.main.MainFragment
 import com.cpacm.logger.SimpleLogger
 import com.cpacm.logger.SimpleLoggerConfig
 import kotlinx.coroutines.runBlocking
-import java.lang.StringBuilder
 
+@LifeLog(key = "lifecycle",level = LoggerLevel.VERBOSE)
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,8 +36,25 @@ class MainActivity : AppCompatActivity() {
         test.doSomeThing("cpacm", false, 1, 66.0, 'k', 4F, 6L, Test(), 10000)
     }
 
-    @MLog(key = "test")
+    @LifeLogStart
+    override fun onStart() {
+        super.onStart()
+    }
+
     override fun onResume() {
         super.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+    }
+
+    @LifeLogEnd
+    override fun onStop() {
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 }

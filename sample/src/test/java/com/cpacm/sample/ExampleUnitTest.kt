@@ -1,8 +1,7 @@
-package com.cpacm.aspectjx
+package com.cpacm.sample
 
 import org.junit.Test
 
-import org.junit.Assert.*
 import java.lang.StringBuilder
 
 /**
@@ -13,7 +12,7 @@ import java.lang.StringBuilder
 class ExampleUnitTest {
     @Test
     fun annotation_test() {
-        val test = com.cpacm.aspectjx.Test()
+        val test = com.cpacm.sample.Test()
         test.doSomeThing("cpacm", 1, 44F, StringBuilder("generate cpacm"))
     }
 }

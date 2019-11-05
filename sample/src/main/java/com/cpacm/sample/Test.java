@@ -1,6 +1,4 @@
-package com.cpacm.aspectjx;
-
-import android.util.Log;
+package com.cpacm.sample;
 
 import androidx.annotation.NonNull;
 
