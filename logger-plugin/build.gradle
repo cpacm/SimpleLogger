@@ -1,0 +1,31 @@
+apply plugin: 'java-gradle-plugin'
+apply plugin: 'kotlin'
+apply plugin: 'maven'
+
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+dependencies {
+    compileOnly gradleApi()
+    implementation localGroovy()
+    implementation 'com.android.tools.build:gradle:3.5.1'
+    implementation "com.android.tools.build:gradle-api:3.5.1"
+    implementation 'org.ow2.asm:asm:6.0'
+    implementation 'org.ow2.asm:asm-util:6.0'
+    implementation 'org.ow2.asm:asm-commons:6.0'
+
+    //implementation 'com.cpacm:logger-annotations:1.0.0'
+}
+
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.groupId = 'com.cpacm'
+            pom.artifactId = 'logger-gradle-plugin'
+            pom.version = '1.0.0'
+            repository(url: uri("../repository"))
+        }
+    }
+}

@@ -1,0 +1,21 @@
+apply plugin: 'java-library'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'com.squareup:javapoet:1.11.1'
+    implementation 'com.google.auto:auto-common:0.10'
+
+    implementation 'com.google.auto.service:auto-service:1.0-rc6'
+    //添加这句，是auto-service注解生效
+    annotationProcessor "com.google.auto.service:auto-service:1.0-rc6"
+
+    implementation 'com.github.javaparser:javaparser-core:3.15.3'
+
+    implementation project(':logger-annotations')
+    //解决 com.sun.tools 不存在的问题
+    compileOnly files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
+}
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
