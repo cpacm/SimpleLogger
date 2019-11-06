@@ -114,7 +114,7 @@ constructor(
         val level = lifelog.level
         val debug = lifelog.debug
         val special = lifelog.special ?: ""
-
+        println("----- @LifeLog-$className:Method<$name> -----")
         var status = 1
         if (annotationMap.containsKey("LifeLogStart")) {
             status = 0
@@ -128,7 +128,7 @@ constructor(
 
     private fun executeMLog() {
         val log = annotationMap["MLog"] ?: return
-
+        println("----- @MLog-$className:Method<$name> -----")
         val logKey = "${log.key}"
         val logContent = "<${name}>:("
         val level = log.level
@@ -154,6 +154,7 @@ constructor(
 
     private fun executeTLogEnter() {
         val log = annotationMap["TLog"] ?: return
+        println("----- @TLog-$className:Method<$name> -----")
         mv.visitMethodInsn(
             Opcodes.INVOKESTATIC,
             "java/lang/System",

@@ -18,11 +18,13 @@ class LogClassVisitor(api: Int, classWriter: ClassWriter, private val className:
      */
     override fun visitAnnotation(desc: String?, visible: Boolean): AnnotationVisitor {
         if (desc?.equals("Lcom/cpacm/annotations/CLog;") == true) {
+            println("----- $className:@CLog -----")
             classLog = LogAnnotation("CLog")
             classLog!!.key = className
             val av = cv.visitAnnotation(desc, visible)
             return LogAnnotationVisitor(api, av, classLog!!)
         } else if (desc?.equals("Lcom/cpacm/annotations/LifeLog;") == true) {
+            println("----- $className:@LifeLog -----")
             lifeLog = LogAnnotation("LifeLog")
             lifeLog!!.key = className
             val av = cv.visitAnnotation(desc, visible)
@@ -44,7 +46,8 @@ class LogClassVisitor(api: Int, classWriter: ClassWriter, private val className:
 
         val isStatic = access and Opcodes.ACC_STATIC == Opcodes.ACC_STATIC
         val mv = cv.visitMethod(access, name, desc, signature, exceptions)
-        val logMethodVisitor = LogMethodVisitor(api, mv, access, name!!, desc, classLog, lifeLog,isStatic,className)
+        val logMethodVisitor =
+            LogMethodVisitor(api, mv, access, name!!, desc, classLog, lifeLog, isStatic, className)
 
         return logMethodVisitor
     }

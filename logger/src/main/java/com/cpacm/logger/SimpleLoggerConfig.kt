@@ -27,6 +27,16 @@ class SimpleLoggerConfig {
         this.filePath = filePath
     }
 
+    constructor(
+        debugEnv: Boolean = false,
+        level: LoggerLevel = LoggerLevel.DEBUG,
+        filePath:String
+    ) {
+        this.debugEnv = debugEnv
+        this.defaultLevel = level
+        this.filePath = filePath
+    }
+
     companion object {
 
         const val LOGGER_DIR = "logs"

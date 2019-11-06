@@ -16,7 +16,6 @@ import org.gradle.api.Project
  */
 class LogPlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        println("---------Logger Plugin Begin----------")
 
         // create a extension
         project.extensions.create("loggerConfig", LogExtension::class.java)

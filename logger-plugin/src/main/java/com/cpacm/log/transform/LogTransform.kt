@@ -28,7 +28,7 @@ import java.net.URLClassLoader
 class LogTransform(private val project: Project) : Transform() {
 
     var isAndroidApp = false
-    var urlClassLoader: URLClassLoader?=null
+    var urlClassLoader: URLClassLoader? = null
 
     override fun getName(): String {
         return TAG
@@ -62,7 +62,6 @@ class LogTransform(private val project: Project) : Transform() {
         if (transformInvocation == null) return
         val logExtension = project.extensions.findByType(LogExtension::class.java) ?: LogExtension()
 
-        println(logExtension.toString())
         //此次是否是增量编译
         var isIncrement = false
 
@@ -84,18 +83,15 @@ class LogTransform(private val project: Project) : Transform() {
                 val lastConfig = gson.fromJson(lines[0], LogConfig::class.java)
                 if (lastConfig?.logConfigStr == null) {
                     //gson文件损坏
-                    println("isIncrement:lastConfig bad")
                     isIncrement = false
                 } else {
                     lastJarMap = lastConfig.jarMap
                     val isConfigChange = logExtension.isConfigChange(lastConfig.logConfigStr)
                     if (isConfigChange) {
-                        println("isIncrement:ConfigChange")
                         isIncrement = false
                     }
                 }
             } catch (e: Exception) {
-                println("isIncrement:${e}")
                 isIncrement = false
             }
         }
@@ -105,7 +101,11 @@ class LogTransform(private val project: Project) : Transform() {
         }
         val newJarMap = hashMapOf<String, String>()
 
-        urlClassLoader = AndroidClassLoader.getClassLoader(transformInvocation.inputs, transformInvocation.referencedInputs, project)
+        urlClassLoader = AndroidClassLoader.getClassLoader(
+            transformInvocation.inputs,
+            transformInvocation.referencedInputs,
+            project
+        )
 
         transformInvocation.inputs.forEach {
             transformSrc(transformInvocation, it, isIncrement)
@@ -184,7 +184,6 @@ class LogTransform(private val project: Project) : Transform() {
             && !name.endsWith("R.class")
             && !name.endsWith("BuildConfig.class")
         ) {
-            println("transformClass:" + file.absolutePath)
             // 获取ClassReader，参数是文件的字节数组
             val classReader = ClassReader(file.readBytes())
             var className = file.name
