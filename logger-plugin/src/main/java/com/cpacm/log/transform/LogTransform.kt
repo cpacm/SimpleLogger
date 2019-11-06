@@ -15,6 +15,8 @@ import java.io.FileOutputStream
 import java.lang.Exception
 import java.util.*
 import kotlin.collections.HashMap
+import java.net.URLClassLoader
+
 
 /**
  * <p>
@@ -26,6 +28,7 @@ import kotlin.collections.HashMap
 class LogTransform(private val project: Project) : Transform() {
 
     var isAndroidApp = false
+    var urlClassLoader: URLClassLoader?=null
 
     override fun getName(): String {
         return TAG
@@ -101,6 +104,9 @@ class LogTransform(private val project: Project) : Transform() {
             transformInvocation.outputProvider.deleteAll()
         }
         val newJarMap = hashMapOf<String, String>()
+
+        urlClassLoader = AndroidClassLoader.getClassLoader(transformInvocation.inputs, transformInvocation.referencedInputs, project)
+
         transformInvocation.inputs.forEach {
             transformSrc(transformInvocation, it, isIncrement)
             transformJar(transformInvocation, it, lastJarMap, newJarMap, isIncrement)
@@ -130,6 +136,7 @@ class LogTransform(private val project: Project) : Transform() {
         inputs: TransformInput,
         isIncrement: Boolean
     ) {
+
         inputs.directoryInputs.forEach { input ->
             val outputDirFile = transformInvocation.outputProvider
                 .getContentLocation(input.name, input.contentTypes, input.scopes, Format.DIRECTORY)
@@ -178,7 +185,6 @@ class LogTransform(private val project: Project) : Transform() {
             && !name.endsWith("BuildConfig.class")
         ) {
             println("transformClass:" + file.absolutePath)
-
             // 获取ClassReader，参数是文件的字节数组
             val classReader = ClassReader(file.readBytes())
             var className = file.name
@@ -187,9 +193,10 @@ class LogTransform(private val project: Project) : Transform() {
             } catch (e: Exception) {
                 println(e.message)
             }
-
+            val classWriter = AndroidClassWriter(urlClassLoader, ClassWriter.COMPUTE_MAXS)
+            //val classWriterWrapper = wrapClassWriter(classWriter)
             // 获取ClassWriter，参数1是reader，参数2用于修改类的默认行为，一般传入ClassWriter.COMPUTE_MAXS
-            val classWriter = ClassWriter(classReader, ClassWriter.COMPUTE_FRAMES)
+            //val classWriter = ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
             //自定义ClassVisitor
             val classVisitor = LogClassVisitor(Opcodes.ASM6, classWriter, className)
             //执行过滤操作
