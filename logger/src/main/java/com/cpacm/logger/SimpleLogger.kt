@@ -1,6 +1,7 @@
 package com.cpacm.logger
 
 import com.cpacm.annotations.LoggerLevel
+import java.io.File
 
 /**
  * <p>
@@ -147,6 +148,16 @@ object SimpleLogger {
     @JvmStatic
     fun e(key: String, content: String, throwable: Throwable? = null, specialName: String? = null) {
         _log_internal_(LoggerLevel.ERROR, key, content, throwable, true, specialName)
+    }
+
+    @JvmStatic
+    fun getLogFiles():List<File>?{
+        return simpleLoggerImpl?.getLogFiles()
+    }
+
+    @JvmStatic
+    fun getLogAllFiles():List<File>?{
+        return simpleLoggerImpl?.getLogFiles()
     }
 
 

@@ -256,5 +256,46 @@ internal class SimpleLoggerImpl(private val config: SimpleLoggerConfig) {
         return config.defaultLevel
     }
 
+    fun getAllLogFiles(): List<File> {
+        return getAllFiles(File(config.filePath))
+    }
 
+    fun getLogFiles(): List<File> {
+        val res = ArrayList<File>()
+        val it = logFileMap.entries.iterator()
+        while (it.hasNext()) {
+            val entry = it.next()
+            val file = File(entry.value)
+            if (file.exists() && !file.isDirectory) {
+                res.add(file)
+            }
+        }
+        return res
+    }
+
+
+    /**
+     * 获取某个目录下的所有文件，递归查找
+     * @param dir 需要递归查找所有文件的目录
+     * @return 返回含有所有平铺file的list结构，永远不为空
+     */
+    private fun getAllFiles(dir: File): List<File> {
+        val res = ArrayList<File>()
+        if (!dir.isDirectory()) {
+            res.add(dir)
+            return res
+        }
+        val childFiles = dir.listFiles()
+        if (childFiles == null || childFiles.size == 0) {
+            return res
+        }
+        for (file in childFiles) {
+            if (file.isDirectory()) {
+                res.addAll(getAllFiles(file))
+            } else {
+                res.add(file)
+            }
+        }
+        return res
+    }
 }
