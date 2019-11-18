@@ -6,6 +6,8 @@ import com.cpacm.annotations.LoggerLevel;
 import com.cpacm.annotations.*;
 import com.cpacm.logger.SimpleLogger;
 
+import java.util.Arrays;
+
 /**
  * <p>
  *
@@ -41,6 +43,11 @@ public class Test {
         //SimpleLogger.logger("ERROR", "test", "<doSomeThing>:(" + var1 + "," + var2 + "," + var3 + "," + var4 + "," + var6 + "," + var7 + "," + var8 + "," + var10 + "," + var11 + ")", true, "");
         //s = "cpacm";
         //boolean result = false;
+    }
+
+
+    @MLog(level = LoggerLevel.ERROR)
+    public void arrayTest(int[] as,float[][] f,double[][][] var,String[] asd){
     }
 
     @TLog

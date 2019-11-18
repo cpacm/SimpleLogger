@@ -556,31 +556,51 @@ constructor(
      * 计算方法上的入参类型
      */
     private fun getMethodParamsCount(desc: String?): ArrayList<String> {
+        println("getMethodParams:$desc")
         val result = arrayListOf<String>()
         if (desc == null || desc.isEmpty()) return result
         var isObjectStr = ""
+        var isArray = false
+        var isObject = false
         for (a in desc) {
             if (a == '(') {
                 result.clear()
                 continue
             }
-            if (isObjectStr.isNotEmpty()) {
+            if (a == ')') {
+                break
+            }
+
+            if (a == '[') {
+                isArray = true
+                isObjectStr += a
+                continue
+            }
+            if (a == 'L') {
+                isObject = true
+                isObjectStr += a
+                continue
+            }
+            if (isObject) {
                 isObjectStr += a
                 if (a == ';') {
                     result.add(isObjectStr)
                     isObjectStr = ""
+                    isObject = false
                 }
                 continue
             }
-            if (a == 'L') {
+            if (isArray) {
                 isObjectStr += a
+                result.add(isObjectStr)
+                isObjectStr = ""
+                isArray = false
                 continue
             }
-            if (a == ')') {
-                break
-            }
+
             result.add(a.toString())
         }
+        println("getMethodParams array :$result")
         return result
     }
 
@@ -607,6 +627,9 @@ constructor(
             if (!str.equals("Ljava/lang/String;")) {
                 return "Ljava/lang/Object;"
             }
+        }
+        if (str.startsWith("[")) {
+            return "Ljava/lang/Object;"
         }
         return str
     }
