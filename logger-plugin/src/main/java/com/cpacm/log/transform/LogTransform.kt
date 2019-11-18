@@ -29,6 +29,7 @@ class LogTransform(private val project: Project) : Transform() {
 
     var isAndroidApp = false
     var urlClassLoader: URLClassLoader? = null
+    private lateinit var logExtension: LogExtension
 
     override fun getName(): String {
         return TAG
@@ -60,7 +61,7 @@ class LogTransform(private val project: Project) : Transform() {
     override fun transform(transformInvocation: TransformInvocation?) {
         super.transform(transformInvocation)
         if (transformInvocation == null) return
-        val logExtension = project.extensions.findByType(LogExtension::class.java) ?: LogExtension()
+        logExtension = project.extensions.findByType(LogExtension::class.java) ?: LogExtension()
 
         //此次是否是增量编译
         var isIncrement = false
@@ -197,7 +198,7 @@ class LogTransform(private val project: Project) : Transform() {
             // 获取ClassWriter，参数1是reader，参数2用于修改类的默认行为，一般传入ClassWriter.COMPUTE_MAXS
             //val classWriter = ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
             //自定义ClassVisitor
-            val classVisitor = LogClassVisitor(Opcodes.ASM6, classWriter, className)
+            val classVisitor = LogClassVisitor(Opcodes.ASM6, classWriter, className, logExtension)
             //执行过滤操作
             classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES)
 
@@ -237,7 +238,7 @@ class LogTransform(private val project: Project) : Transform() {
                 //else 剩下的为 NOTCHANGED 和 REMOVED 先不做处理
             }
 
-            FileUtils.copyFile(input.file, outputFile)
+            //FileUtils.copyFile(input.file, outputFile)
         }
     }
 

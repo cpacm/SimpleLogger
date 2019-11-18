@@ -20,3 +20,14 @@ uploadArchives {
         }
     }
 }
+
+//uploadArchives {
+//    repositories {
+//        mavenDeployer {
+//            pom.groupId = 'com.cpacm'
+//            pom.artifactId = 'logger-gradle-plugin'
+//            pom.version = '1.0.0'
+//            repository(url: uri("../repository"))
+//        }
+//    }
+//}

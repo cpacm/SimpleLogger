@@ -36,7 +36,7 @@ public class Test {
     }
 
 
-    @MLog(key = "test", level = LoggerLevel.ERROR)
+    @MLog(level = LoggerLevel.ERROR)
     public void doSomeThing(String var1, boolean var2, int var3, double var4, char var6, float var7, long var8, Object var10, Integer var11) {
         //SimpleLogger.logger("ERROR", "test", "<doSomeThing>:(" + var1 + "," + var2 + "," + var3 + "," + var4 + "," + var6 + "," + var7 + "," + var8 + "," + var10 + "," + var11 + ")", true, "");
         //s = "cpacm";

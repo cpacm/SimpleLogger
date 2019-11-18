@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+
 apply plugin: 'com.cpacm.log'
 
 android {
@@ -39,10 +40,11 @@ loggerConfig {
     enableLibrary false
     defaultContent {
         clogKey "cpacm"
+        mlogContent "这些是参数：{params}"
+        tlogContent "<{methodName}>:花费时间为 {time}"
+
     }
 }
-
-
 
 
 dependencies {

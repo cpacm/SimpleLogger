@@ -7,23 +7,23 @@ package com.cpacm.log.extension
  */
 
 open class DefaultContent {
-    var clogKey = "{className}"
-    var clogContent = "<{methodName}>:({params})"
-    var clogLevel = "VERBOSE"
+    var clogKey = CLASS_NAME
+    var clogContent = "<$METHOD_NAME>:($PARAMS_NAME)"
+    var clogLevel = "UNDEFINED"
 
-    var lifeLogKey = "{className}"
-    var lifeStartContent = "Lifecycle Start at <{methodName}>:({params})"
-    var lifeRunningContent = "Lifecycle Running at <{methodName}>:({params})"
-    var lifeEndContent = "Lifecycle End at <{methodName}>:({params})"
-    var lifeLevel = "DEBUG"
+    var lifeLogKey = CLASS_NAME
+    var lifeStartContent = "Lifecycle Start at <$METHOD_NAME>:($PARAMS_NAME)"
+    var lifeRunningContent = "Lifecycle Running at <$METHOD_NAME>:($PARAMS_NAME)"
+    var lifeEndContent = "Lifecycle End at <$METHOD_NAME>:($PARAMS_NAME)"
+    var lifeLevel = "UNDEFINED"
 
-    var mlogKey = "{className}"
-    var mlogContent = "<{methodName}>:({params})"
-    var mlogLevel = "VERBOSE"
+    var mlogKey = CLASS_NAME
+    var mlogContent = "<$METHOD_NAME>:($PARAMS_NAME)"
+    var mlogLevel = "UNDEFINED"
 
-    var tlogKey = "{className}"
-    var tlogContent = "<{methodName}>:cost mills ({time})"
-    var tlogLevel = "VERBOSE"
+    var tlogKey = CLASS_NAME
+    var tlogContent = "<$METHOD_NAME>:cost mills $TIME_NAME"
+    var tlogLevel = "UNDEFINED"
 
     fun clogLevel(s: String) {
         this.clogLevel = s
@@ -80,6 +80,13 @@ open class DefaultContent {
 
     fun tlogLevel(s: String) {
         this.tlogLevel = s
+    }
+
+    companion object {
+        const val CLASS_NAME = "{className}"
+        const val METHOD_NAME = "{methodName}"
+        const val PARAMS_NAME = "{params}"
+        const val TIME_NAME = "{time}"
     }
 
     override fun toString(): String {

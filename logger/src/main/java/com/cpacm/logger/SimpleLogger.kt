@@ -102,7 +102,11 @@ object SimpleLogger {
 
     @JvmStatic
     fun d(key: String, content: String, throwable: Throwable? = null, specialName: String? = null) {
-        _log_internal_(LoggerLevel.DEBUG, key, content, throwable, true, specialName)
+        var debug = true
+        if (!specialName.isNullOrEmpty()) {
+            debug = false
+        }
+        _log_internal_(LoggerLevel.DEBUG, key, content, throwable, debug, specialName)
     }
 
     @JvmStatic
@@ -117,7 +121,11 @@ object SimpleLogger {
 
     @JvmStatic
     fun i(key: String, content: String, throwable: Throwable? = null, specialName: String? = null) {
-        _log_internal_(LoggerLevel.INFO, key, content, throwable, true, specialName)
+        var debug = true
+        if (!specialName.isNullOrEmpty()) {
+            debug = false
+        }
+        _log_internal_(LoggerLevel.INFO, key, content, throwable, debug, specialName)
     }
 
     @JvmStatic
@@ -132,7 +140,11 @@ object SimpleLogger {
 
     @JvmStatic
     fun w(key: String, content: String, throwable: Throwable? = null, specialName: String? = null) {
-        _log_internal_(LoggerLevel.WARN, key, content, throwable, true, specialName)
+        var debug = true
+        if (!specialName.isNullOrEmpty()) {
+            debug = false
+        }
+        _log_internal_(LoggerLevel.WARN, key, content, throwable, debug, specialName)
     }
 
     @JvmStatic
@@ -146,17 +158,22 @@ object SimpleLogger {
     }
 
     @JvmStatic
+    fun e(key: String, throwable: Throwable? = null) {
+        e(key, throwable.toString(), throwable, null)
+    }
+
+    @JvmStatic
     fun e(key: String, content: String, throwable: Throwable? = null, specialName: String? = null) {
         _log_internal_(LoggerLevel.ERROR, key, content, throwable, true, specialName)
     }
 
     @JvmStatic
-    fun getLogFiles():List<File>?{
+    fun getLogFiles(): List<File>? {
         return simpleLoggerImpl?.getLogFiles()
     }
 
     @JvmStatic
-    fun getLogAllFiles():List<File>?{
+    fun getLogAllFiles(): List<File>? {
         return simpleLoggerImpl?.getLogFiles()
     }
 

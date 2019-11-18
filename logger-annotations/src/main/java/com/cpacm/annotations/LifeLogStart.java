@@ -13,4 +13,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.CLASS)
 public @interface LifeLogStart {
+
+    String content() default "";//不定义则默认为参数+参数值
+
 }

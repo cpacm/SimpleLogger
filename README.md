@@ -167,7 +167,7 @@ D/lifecycle: Lifecycle End at <onStop>:()
 
 | 参数名 | 作用  |
 | ------ | ------ | 
-| debugEnv: Boolean | true:表示为调试环境，所有log都可以输出；false: 除去 error 级别外，所有log都无法输出 | 
+| debugEnv: Boolean | true:表示为调试环境，所有log都可以输出；false: 默认log除去 error 级别外，所有log都无法输出,额外log例外 | 
 | level: LoggerLevel | 默认输出等级，一共分为`VERBOSE`,`DEBUG`,`INFO`,`WARN` 和 `ERROR` |
 | filePath：String | `log4j` 文件输出地址，默认为应用内部文件地址 |
 
@@ -182,7 +182,49 @@ D/lifecycle: Lifecycle End at <onStop>:()
 | debug | 是否只在debug环境中显示，默认为true. false表示在正式环境中也会输出日志 |
 | special | 是否保存至额外文件，针对 `log4j` |
 
+### log可配置项
+在gradle中可以配置各个log注解的默认输出文字
+```groovy
+loggerConfig {
+    enableLibrary false
+    defaultContent {
+        clogKey "cpacm"
+        mlogContent "这些是参数：{params}"
+        tlogContent "<{methodName}>:花费时间为 {time}"
+
+    }
+}
+```
+
+| 参数名 | 作用对象  |
+| ------ | ------ | 
+| clogKey | `CLog` 的默认关键字 | 
+| clogContent | `CLog` 的默认输出文字 |
+| clogLevel | `CLog` 的默认输出等级 |
+| mlogKey | `MLog` 的默认关键字 | 
+| mlogContent | `MLog` 的默认输出文字 |
+| mlogLevel | `MLog` 的默认输出等级 |
+| lifeLogKey | `LifeLog` 的默认关键字 | 
+| lifeStartContent | `LifeLogStart` 的默认输出文字 |
+| lifeRunningContent | `LifeLog` 的默认输出文字 |
+| lifeEndContent | `LifeLogEnd` 的默认输出文字 |
+| lifeLevel | `LifeLog` 的默认输出等级 |
+| tlogKey | `TLog` 的默认关键字 | 
+| tlogContent | `TLog` 的默认输出文字 |
+| tlogLevel | `TLog` 的默认输出等级 |
+
+
+可变参数如下表所示
+
+| 可变参数 | 作用  |
+| ------ | ------ | 
+| {className} | 可替换当前类名 | 
+| {methodName} | 可替换当前方法名，ps:类上的注释为空 | 
+| {params} | 填入方法上的参数值，ps:只针对方法上的注释 | 
+| {time} | 替换耗时时间，ps:只针对 `TLog` | 
+
+
 ## TODO
-0. ~~增量编译~~ 已完成，待测试
-1. 添加插件的自定义参数，用来配置各个log注解的默认输出文字
+0. ~~增量编译~~ 已完成
+1. ~~添加插件的自定义参数，用来配置各个log注解的默认输出文字~~ 已完成
 2. 添加GLog,作用为 根据配置的方法名对所有类进行匹配，并添加输出日志

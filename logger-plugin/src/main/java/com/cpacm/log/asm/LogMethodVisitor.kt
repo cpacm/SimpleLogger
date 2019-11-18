@@ -3,6 +3,8 @@ package com.cpacm.log.asm
 import org.objectweb.asm.*
 import org.objectweb.asm.commons.AdviceAdapter
 import com.cpacm.log.asm.LogAnnotation
+import com.cpacm.log.extension.DefaultContent
+import com.cpacm.log.extension.LogExtension
 import com.squareup.javapoet.ClassName
 
 
@@ -32,7 +34,8 @@ constructor(
     private val clog: LogAnnotation?,
     private val lifelog: LogAnnotation?,
     private val isStatic: Boolean = false,
-    private val className: String
+    private val className: String,
+    private val logExtension: LogExtension
 ) : AdviceAdapter(api, mv, access, name, desc) {
 
     private val paramList: ArrayList<String>
@@ -65,19 +68,27 @@ constructor(
         var log: LogAnnotation? = null
         if (desc.equals("Lcom/cpacm/annotations/LifeLogEnd;")) {
             log = LogAnnotation("LifeLogEnd")
-            log.key = className
+            log.key = logExtension.defaultContent.lifeLogKey
+            log.content = logExtension.defaultContent.lifeEndContent
+            log.level = logExtension.defaultContent.lifeLevel
             annotationMap.put("LifeLogEnd", log)
         } else if (desc.equals("Lcom/cpacm/annotations/LifeLogStart;")) {
             log = LogAnnotation("LifeLogStart")
-            log.key = className
+            log.key = logExtension.defaultContent.lifeLogKey
+            log.content = logExtension.defaultContent.lifeStartContent
+            log.level = logExtension.defaultContent.lifeLevel
             annotationMap.put("LifeLogStart", log)
         } else if (desc.equals("Lcom/cpacm/annotations/MLog;")) {
             log = LogAnnotation("MLog")
-            log.key = className
+            log.key = logExtension.defaultContent.mlogKey
+            log.content = logExtension.defaultContent.mlogContent
+            log.level = logExtension.defaultContent.mlogLevel
             annotationMap.put("MLog", log)
         } else if (desc.equals("Lcom/cpacm/annotations/TLog;")) {
             log = LogAnnotation("TLog")
-            log.key = className
+            log.key = logExtension.defaultContent.tlogKey
+            log.content = logExtension.defaultContent.tlogContent
+            log.level = logExtension.defaultContent.tlogLevel
             annotationMap.put("TLog", log)
         } else if (desc.equals("Lcom/cpacm/annotations/NoLog;")) {
             log = LogAnnotation("NoLog")
@@ -109,33 +120,123 @@ constructor(
     }
 
     private fun executeLifeLog() {
-        val logKey = "${lifelog!!.key}"
-        var logContent = "Lifecycle Running at <${name}>:("
+        val logKey = formatContentStr(lifelog!!.key, className, name)
+        val logContent: String
+        val logContentSuffix: String
         val level = lifelog.level
         val debug = lifelog.debug
         val special = lifelog.special ?: ""
+        val hasParams: Boolean
         println("----- @LifeLog-$className:Method<$name> -----")
         var status = 1
         if (annotationMap.containsKey("LifeLogStart")) {
             status = 0
-            logContent = "Lifecycle Start at <${name}>:("
+            val log = annotationMap["LifeLogStart"]
+            val strPair = splitParamStr(log!!.content, className, name)
+            logContent = strPair.first
+            if (strPair.second == null) {
+                logContentSuffix = ""
+                hasParams = false
+            } else {
+                logContentSuffix = strPair.second!!
+                hasParams = true
+            }
         } else if (annotationMap.containsKey("LifeLogEnd")) {
             status = 2
-            logContent = "Lifecycle End at <${name}>:("
+            val log = annotationMap["LifeLogEnd"]
+            val strPair = splitParamStr(log!!.content, className, name)
+            logContent = strPair.first
+            if (strPair.second == null) {
+                logContentSuffix = ""
+                hasParams = false
+            } else {
+                logContentSuffix = strPair.second!!
+                hasParams = true
+            }
+        } else {
+            val strPair = splitParamStr(lifelog.content, className, name)
+            logContent = strPair.first
+            if (strPair.second == null) {
+                logContentSuffix = ""
+                hasParams = false
+            } else {
+                logContentSuffix = strPair.second!!
+                hasParams = true
+            }
         }
-        generateLifeLogger(status, logKey, logContent, level, debug, special)
+
+        generateLifeLogger(
+            status,
+            logKey,
+            logContent,
+            logContentSuffix,
+            level,
+            debug,
+            special,
+            hasParams
+        )
     }
+
+    private fun formatContentStr(
+        source: String?,
+        className: String = "",
+        methodName: String = ""
+    ): String {
+        if (source == null) return className
+        val result = source.replace(DefaultContent.CLASS_NAME, className)
+            .replace(DefaultContent.METHOD_NAME, methodName)
+            .replace(DefaultContent.PARAMS_NAME, "")
+            .replace(DefaultContent.TIME_NAME, "")
+        return result
+    }
+
+    private fun splitParamStr(
+        source: String?,
+        className: String = "",
+        methodName: String = ""
+    ): Pair<String, String?> {
+        if (source == null) return Pair("", null)
+        val result = source.replace(DefaultContent.CLASS_NAME, className)
+            .replace(DefaultContent.METHOD_NAME, methodName)
+            .replace(DefaultContent.TIME_NAME, "")
+        val list = result.split(DefaultContent.PARAMS_NAME, limit = 2)
+        return Pair(if (list.isNotEmpty()) list[0] else "", if (list.size > 1) list[1] else null)
+    }
+
+    private fun splitTimeStr(
+        source: String?,
+        className: String = "",
+        methodName: String = ""
+    ): Pair<String, String?> {
+        if (source == null) return Pair("", null)
+        val result = source.replace(DefaultContent.CLASS_NAME, className)
+            .replace(DefaultContent.METHOD_NAME, methodName)
+            .replace(DefaultContent.PARAMS_NAME, "")
+        val list = result.split(DefaultContent.TIME_NAME, limit = 2)
+        return Pair(if (list.isNotEmpty()) list[0] else "", if (list.size > 1) list[1] else null)
+    }
+
 
     private fun executeMLog() {
         val log = annotationMap["MLog"] ?: return
         println("----- @MLog-$className:Method<$name> -----")
-        val logKey = "${log.key}"
-        val logContent = "<${name}>:("
+        val logKey = formatContentStr(log.key, className, name)
+        val strPair = splitParamStr(log.content, className, name)
+        val logContent = strPair.first
+        val logContentSuffix: String
+        val hasParams: Boolean
+        if (strPair.second == null) {
+            logContentSuffix = ""
+            hasParams = false
+        } else {
+            logContentSuffix = strPair.second!!
+            hasParams = true
+        }
         val level = log.level
         val debug = log.debug
         val special = log.special ?: ""
 
-        generateLogger(logKey, logContent, level, debug, special)
+        generateLogger(logKey, logContent, logContentSuffix, level, debug, special, hasParams)
     }
 
     private fun executeCLog() {
@@ -143,13 +244,23 @@ constructor(
         if (annotationMap.containsKey("MLog")) {
             return
         }
-        val logKey = "${clog!!.key}"
-        val logContent = "<${name}>:("
+        val logKey = formatContentStr(clog!!.key, className, name)
+        val strPair = splitParamStr(clog.content, className, name)
+        val logContent = strPair.first
+        val logContentSuffix: String
+        val hasParams: Boolean
+        if (strPair.second == null) {
+            logContentSuffix = ""
+            hasParams = false
+        } else {
+            logContentSuffix = strPair.second!!
+            hasParams = true
+        }
         val level = clog.level
         val debug = clog.debug
         val special = clog.special ?: ""
 
-        generateLogger(logKey, logContent, level, debug, special)
+        generateLogger(logKey, logContent, logContentSuffix, level, debug, special, hasParams)
     }
 
     private fun executeTLogEnter() {
@@ -172,23 +283,31 @@ constructor(
         mv.visitInsn(LSUB)
         mv.visitVarInsn(LSTORE, LSTORE_RESULT)
 
-        val logKey = "${log.key}"
-        val logContent = "<${name}>:cost mills--"
+        val logKey = formatContentStr(log.key, className, name)
+        val strPair = splitTimeStr(log.content, className, name)
+        val logContent = strPair.first
+        val logContentSuffix: String?
+        if (strPair.second == null) {
+            logContentSuffix = null
+        } else {
+            logContentSuffix = strPair.second!!
+        }
         val level = log.level
         val debug = log.debug
         val special = log.special ?: ""
 
-        generateLogger(logKey, logContent, level, debug, special, true, LSTORE_RESULT)
+        generateTLogger(logKey, logContent, logContentSuffix, level, debug, special)
     }
 
     private fun generateLifeLogger(
         status: Int,
         logKey: String,
         logContent: String,
+        logContentSuffix: String,
         level: String,
         debug: Boolean,
         special: String,
-        custom: Boolean = false
+        hasParams: Boolean = true
     ) {
         mv.visitTypeInsn(NEW, "java/lang/StringBuilder");
         mv.visitInsn(DUP);
@@ -238,7 +357,7 @@ constructor(
             "(Ljava/lang/String;)Ljava/lang/StringBuilder;",
             false
         )
-        if (!custom) {
+        if (hasParams) {
             val count = paramList.size
             var extraPlus = if (isStatic) 0 else 1
             for (i in 0 until count) {
@@ -265,7 +384,7 @@ constructor(
                     )
                 }
             }
-            mv.visitLdcInsn(")");
+            mv.visitLdcInsn(logContentSuffix)
             mv.visitMethodInsn(
                 INVOKEVIRTUAL,
                 "java/lang/StringBuilder",
@@ -297,11 +416,11 @@ constructor(
     private fun generateLogger(
         logKey: String,
         logContent: String,
+        logContentSuffix: String,
         level: String,
         debug: Boolean,
         special: String,
-        custom: Boolean = false,
-        loadVar: Int = 0
+        hasParams: Boolean = true
     ) {
         mv.visitLdcInsn(level)
         mv.visitLdcInsn(logKey)
@@ -316,7 +435,7 @@ constructor(
             "(Ljava/lang/String;)Ljava/lang/StringBuilder;",
             false
         )
-        if (!custom) {
+        if (hasParams) {
             val count = paramList.size
             var extraPlus = if (isStatic) 0 else 1
             for (i in 0 until count) {
@@ -343,7 +462,7 @@ constructor(
                     )
                 }
             }
-            mv.visitLdcInsn(")");
+            mv.visitLdcInsn(logContentSuffix);
             mv.visitMethodInsn(
                 INVOKEVIRTUAL,
                 "java/lang/StringBuilder",
@@ -352,13 +471,64 @@ constructor(
                 false
             )
         }
-        if (loadVar > 0) {
-            mv.visitVarInsn(Opcodes.LLOAD, LSTORE_RESULT)
+
+        mv.visitMethodInsn(
+            INVOKEVIRTUAL,
+            "java/lang/StringBuilder",
+            "toString",
+            "()Ljava/lang/String;",
+            false
+        )
+        mv.visitInsn(if (debug) ICONST_1 else ICONST_0)
+        mv.visitLdcInsn(special)
+        mv.visitMethodInsn(
+            INVOKESTATIC,
+            "com/cpacm/logger/SimpleLogger",
+            "logger",
+            "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;)V",
+            false
+        )
+
+    }
+
+    private fun generateTLogger(
+        logKey: String,
+        logContent: String,
+        logContentSuffix: String?,
+        level: String,
+        debug: Boolean,
+        special: String
+    ) {
+        mv.visitLdcInsn(level)
+        mv.visitLdcInsn(logKey)
+        mv.visitTypeInsn(NEW, "java/lang/StringBuilder")
+        mv.visitInsn(DUP)
+        mv.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false)
+        mv.visitLdcInsn(logContent)
+        mv.visitMethodInsn(
+            INVOKEVIRTUAL,
+            "java/lang/StringBuilder",
+            "append",
+            "(Ljava/lang/String;)Ljava/lang/StringBuilder;",
+            false
+        )
+
+        mv.visitVarInsn(Opcodes.LLOAD, LSTORE_RESULT)
+        mv.visitMethodInsn(
+            INVOKEVIRTUAL,
+            "java/lang/StringBuilder",
+            "append",
+            "(J)Ljava/lang/StringBuilder;",
+            false
+        )
+
+        if (logContentSuffix != null) {
+            mv.visitLdcInsn(logContentSuffix);
             mv.visitMethodInsn(
                 INVOKEVIRTUAL,
                 "java/lang/StringBuilder",
                 "append",
-                "(J)Ljava/lang/StringBuilder;",
+                "(Ljava/lang/String;)Ljava/lang/StringBuilder;",
                 false
             )
         }
