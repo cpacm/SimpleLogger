@@ -556,7 +556,6 @@ constructor(
      * 计算方法上的入参类型
      */
     private fun getMethodParamsCount(desc: String?): ArrayList<String> {
-        println("getMethodParams:$desc")
         val result = arrayListOf<String>()
         if (desc == null || desc.isEmpty()) return result
         var isObjectStr = ""
@@ -600,7 +599,6 @@ constructor(
 
             result.add(a.toString())
         }
-        println("getMethodParams array :$result")
         return result
     }
 

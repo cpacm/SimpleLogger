@@ -32,8 +32,8 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    api project(':logger-annotations')
-    //implementation 'com.cpacm:logger-annotations:1.0.0'
+    //api project(':logger-annotations')
+    implementation 'com.cpacm:logger-annotations:1.0.1'
     implementation files('libs/log4j-1.2.17.jar')
     implementation files('libs/android-logging-log4j-1.0.3.jar')
 }
@@ -45,7 +45,7 @@ uploadArchives {
                 authentication(userName: "admin", password: "admin123")
                 pom.groupId = 'com.cpacm'
                 pom.artifactId = "logger"
-                pom.version = '1.0.0'
+                pom.version = '1.0.1'
             }
         }
     }

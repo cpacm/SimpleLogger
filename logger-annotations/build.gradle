@@ -15,7 +15,7 @@ uploadArchives {
                 authentication(userName: "admin", password: "admin123")
                 pom.groupId = 'com.cpacm'
                 pom.artifactId = "logger-annotations"
-                pom.version = '1.0.0'
+                pom.version = '1.0.1'
             }
         }
     }

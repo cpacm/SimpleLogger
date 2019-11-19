@@ -194,7 +194,6 @@ class LogTransform(private val project: Project) : Transform() {
                 println(e.message)
             }
             val classWriter = AndroidClassWriter(urlClassLoader, ClassWriter.COMPUTE_MAXS)
-            //val classWriterWrapper = wrapClassWriter(classWriter)
             // 获取ClassWriter，参数1是reader，参数2用于修改类的默认行为，一般传入ClassWriter.COMPUTE_MAXS
             //val classWriter = ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
             //自定义ClassVisitor

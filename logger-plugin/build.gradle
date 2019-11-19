@@ -19,27 +19,27 @@ dependencies {
 }
 
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            pom.groupId = 'com.cpacm'
-            pom.artifactId = 'logger-gradle-plugin'
-            pom.version = '1.0.0'
-            repository(url: uri("../repository"))
-        }
-    }
-}
-
-
 //uploadArchives {
 //    repositories {
 //        mavenDeployer {
-//            repository(url: "http://nexus.yipiaoyun.com/repository/android/") {
-//                authentication(userName: "admin", password: "admin123")
-//                pom.groupId = 'com.cpacm'
-//                pom.artifactId = "logger-gradle-plugin"
-//                pom.version = '1.0.0'
-//            }
+//            pom.groupId = 'com.cpacm'
+//            pom.artifactId = 'logger-gradle-plugin'
+//            pom.version = '1.0.0'
+//            repository(url: uri("../repository"))
 //        }
 //    }
 //}
+
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "http://nexus.yipiaoyun.com/repository/android/") {
+                authentication(userName: "admin", password: "admin123")
+                pom.groupId = 'com.cpacm'
+                pom.artifactId = "logger-gradle-plugin"
+                pom.version = '1.0.0'
+            }
+        }
+    }
+}
