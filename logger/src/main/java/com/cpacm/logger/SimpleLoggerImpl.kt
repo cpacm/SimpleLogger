@@ -9,8 +9,6 @@ import org.apache.log4j.PatternLayout
 import org.apache.log4j.RollingFileAppender
 import java.io.File
 import java.io.IOException
-import java.util.concurrent.ArrayBlockingQueue
-import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
 
 /**
@@ -20,10 +18,7 @@ import java.util.concurrent.LinkedBlockingQueue
  */
 internal class SimpleLoggerImpl(private val config: SimpleLoggerConfig) {
 
-    private lateinit var debugLogger: Logger
-    private lateinit var infoLogger: Logger
-    private lateinit var errorLogger: Logger
-
+    private val loggerMap = hashMapOf<String, Logger>()
     private val logFileMap = hashMapOf<String, String>()
 
 
@@ -46,17 +41,20 @@ internal class SimpleLoggerImpl(private val config: SimpleLoggerConfig) {
             // error log
             val errorAppender = getFileAppender("error.log", true)
 
-            debugLogger = Logger.getLogger("debug")
+            val debugLogger = Logger.getLogger("debug")
             debugLogger.addAppender(debugAppender)
+            loggerMap.put("debug", debugLogger)
 
-            infoLogger = Logger.getLogger("info")
+            val infoLogger = Logger.getLogger("info")
             infoLogger.addAppender(infoAppender)
             infoLogger.addAppender(debugAppender)
+            loggerMap.put("info", infoLogger)
 
-            errorLogger = Logger.getLogger("error")
+            val errorLogger = Logger.getLogger("error")
             errorLogger.addAppender(errorAppender)
             errorLogger.addAppender(infoAppender)
             errorLogger.addAppender(debugAppender)
+            loggerMap.put("error", errorLogger)
 
         } catch (e: RuntimeException) {
             Log.e("SimpleLogger", e.message, e)
@@ -150,7 +148,7 @@ internal class SimpleLoggerImpl(private val config: SimpleLoggerConfig) {
     ) {
         if (debug && !config.debugEnv) return
         val logger =
-            if (specialName != null && specialName.isNotEmpty()) registerSpecialLog(specialName) else debugLogger
+            getLogByName(if (specialName != null && specialName.isNotEmpty()) specialName else "debug")
 
         logger.log(Level.DEBUG, "[" + tag + "] " + (msg ?: ""), throwable)
         var l = msg?.toString() ?: "null"
@@ -169,7 +167,7 @@ internal class SimpleLoggerImpl(private val config: SimpleLoggerConfig) {
     ) {
         if (debug && !config.debugEnv) return
         val logger =
-            if (specialName != null && specialName.isNotEmpty()) registerSpecialLog(specialName) else debugLogger
+            getLogByName(if (specialName != null && specialName.isNotEmpty()) specialName else "debug")
         logger.log(Level.DEBUG, "[" + tag + "] " + (msg ?: ""), throwable)
         var l = msg?.toString() ?: "null"
         while (l.length > 3500) {
@@ -186,7 +184,7 @@ internal class SimpleLoggerImpl(private val config: SimpleLoggerConfig) {
     ) {
         if (debug && !config.debugEnv) return
         val logger =
-            if (specialName != null && specialName.isNotEmpty()) registerSpecialLog(specialName) else infoLogger
+            getLogByName(if (specialName != null && specialName.isNotEmpty()) specialName else "info")
         logger.log(Level.INFO, "[" + tag + "] " + (msg ?: ""), throwable)
         var l = msg?.toString() ?: "null"
         while (l.length > 3500) {
@@ -203,7 +201,7 @@ internal class SimpleLoggerImpl(private val config: SimpleLoggerConfig) {
     ) {
         if (debug && !config.debugEnv) return
         val logger =
-            if (specialName != null && specialName.isNotEmpty()) registerSpecialLog(specialName) else infoLogger
+            getLogByName(if (specialName != null && specialName.isNotEmpty()) specialName else "info")
 
         logger.log(Level.WARN, "[" + tag + "] " + (msg ?: ""), throwable)
         var l = msg?.toString() ?: "null"
@@ -219,7 +217,7 @@ internal class SimpleLoggerImpl(private val config: SimpleLoggerConfig) {
         specialName: String? = null
     ) {
         val logger =
-            if (specialName != null && specialName.isNotEmpty()) registerSpecialLog(specialName) else errorLogger
+            getLogByName(if (specialName != null && specialName.isNotEmpty()) specialName else "error")
         logger.log(Level.ERROR, "[" + tag + "] " + (msg ?: ""), throwable)
         var l = msg?.toString() ?: "null"
         while (l.length > 3500) {
@@ -229,11 +227,16 @@ internal class SimpleLoggerImpl(private val config: SimpleLoggerConfig) {
         Log.e(tag, l)
     }
 
-    private fun registerSpecialLog(name: String): Logger {
+    private fun getLogByName(name: String): Logger {
+        if (loggerMap.containsKey(name)) return loggerMap.get(name)!!
+
         val appender = getFileAppender("$name.log", true)
         val logger = Logger.getLogger(name)
         logger.addAppender(appender)
-        logger.addAppender(debugLogger.getAppender("debug.log"))
+        if (loggerMap.containsKey("debug")) {
+            logger.addAppender(loggerMap.get("debug")!!.getAppender("debug.log"))
+        }
+        loggerMap[name] = logger
         return logger
     }
 

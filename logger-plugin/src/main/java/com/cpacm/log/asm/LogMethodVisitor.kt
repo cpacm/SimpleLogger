@@ -5,7 +5,6 @@ import org.objectweb.asm.commons.AdviceAdapter
 import com.cpacm.log.asm.LogAnnotation
 import com.cpacm.log.extension.DefaultContent
 import com.cpacm.log.extension.LogExtension
-import com.squareup.javapoet.ClassName
 
 
 /**
@@ -609,6 +608,8 @@ constructor(
         return when (load) {
             "I" -> Opcodes.ILOAD
             "C" -> Opcodes.ILOAD
+            "B" -> Opcodes.ILOAD
+            "S" -> Opcodes.ILOAD
             "F" -> Opcodes.FLOAD
             "D" -> Opcodes.DLOAD
             "J" -> Opcodes.LLOAD
@@ -628,6 +629,9 @@ constructor(
         }
         if (str.startsWith("[")) {
             return "Ljava/lang/Object;"
+        }
+        if(str.equals("B")|| str.equals("S")){
+            return "I"
         }
         return str
     }

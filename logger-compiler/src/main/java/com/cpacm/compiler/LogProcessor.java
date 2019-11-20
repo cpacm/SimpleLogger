@@ -71,6 +71,9 @@ public class LogProcessor extends AbstractProcessor {
         }
     }
 
+    /**
+     * 添加需要支持解析的注解
+     */
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         Set<String> annotations = new LinkedHashSet<>();
@@ -80,6 +83,9 @@ public class LogProcessor extends AbstractProcessor {
         return annotations;
     }
 
+    /**
+     * 获取注解并自定义处理方式
+     */
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
 
@@ -90,6 +96,7 @@ public class LogProcessor extends AbstractProcessor {
     }
 
     private void processGlobalLogClass(RoundEnvironment roundEnvironment) {
+        //获取所有拥有CLog注解的元素，可能是类，方法，变量等等
         Set<? extends Element> elements = roundEnvironment.getElementsAnnotatedWith(CLog.class);
         for (Element element : elements) {
             if (element.getKind() == ElementKind.CLASS) {

@@ -45,9 +45,14 @@ public class Test {
         //boolean result = false;
     }
 
+    public void byteTest(short s, byte b) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(s).append(b);
+    }
+
 
     @MLog(level = LoggerLevel.ERROR)
-    public void arrayTest(int[] as,float[][] f,double[][][] var,String[] asd){
+    public void arrayTest(int[] as, float[][] f, double[][][] var, String[] asd) {
     }
 
     @TLog
